@@ -1,3 +1,4 @@
+// This is handling all the logic of application and twitter folder is not the main folder this is  
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
@@ -39,7 +40,6 @@ function getNextApiKey(): string {
   keyUsageCount[currentKey]++;
   return currentKey;
 }
-
 
 // Initialize Gemini client
 const apiKey = getNextApiKey();
