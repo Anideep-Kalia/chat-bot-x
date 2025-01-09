@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Fetch user data and tweets
+    // Array containing user data and tweets and then we can use the tweets and user data to generate the response
     const [userData, tweets] = await Promise.all([
       fetchUserData(username),
       fetchTweets(username)
@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate persona response
+    // Generating personalised response based on the tweets and user data and the message
     const response = await generatePersonaResponse(tweets, message, userData);
     return NextResponse.json({ message: response });
   } catch (error) {
@@ -128,6 +128,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// Fetching user data from the rapidapi-twitter
 async function fetchUserData(username: string): Promise<UserData> {
   const response = await fetch(
     `https://twitter-api45.p.rapidapi.com/screenname.php?screenname=${username}`,
@@ -181,8 +182,10 @@ async function fetchTweets(username: string): Promise<string[]> {
   }
 
   const data = (await response.json()) as TwitterResponse;
-  const instructions =
-    data?.data?.user?.result?.timeline_v2?.timeline?.instructions || [];
+
+  // for response=> {data: {user: {result: {timeline_v2: {timeline: {instructions: []}}}}}} if any variable is not present then it will return []
+  const instructions = data?.data?.user?.result?.timeline_v2?.timeline?.instructions || [];
+
   const entries =
     instructions.find(
       (inst: any) => inst.type === 'TimelineAddEntries'
