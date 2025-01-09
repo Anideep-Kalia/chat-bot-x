@@ -186,9 +186,10 @@ async function fetchTweets(username: string): Promise<string[]> {
   // for response=> {data: {user: {result: {timeline_v2: {timeline: {instructions: []}}}}}} if any variable is not present then it will return []
   const instructions = data?.data?.user?.result?.timeline_v2?.timeline?.instructions || [];
 
-  const entries =
-    instructions.find(
-      (inst: any) => inst.type === 'TimelineAddEntries'
+
+  // finding the entries in the instructions array
+  const entries = instructions.find(
+      (i: any) => i.type === 'TimelineAddEntries'
     )?.entries || [];
 
   return entries
@@ -212,40 +213,38 @@ async function generatePersonaResponse(
       .slice(0, 5000); // Limit total content
 
     const safePrompt = `You are acting as ${userData.name} (@${userData.username}). Your task is to analyze their tweets and respond to a message in their authentic voice and style.
+    Context:
+    - Their recent tweets: ${sanitizedTweets}
+    - Their bio: ${userData.description}
+    - Their location: ${userData.location}
+    - Account created: ${userData.created_at}
+    - Follower count: ${userData.followers_count}
+    - Following count: ${userData.following_count}
 
-Context:
-- Their recent tweets: ${sanitizedTweets}
-- Their bio: ${userData.description}
-- Their location: ${userData.location}
-- Account created: ${userData.created_at}
-- Follower count: ${userData.followers_count}
-- Following count: ${userData.following_count}
+    Message to respond to: "${inputMessage}"
 
-Message to respond to: "${inputMessage}"
+    Response guidelines:
+    1. Keep response under 50 words
+    2. Match their vocabulary, tone, and typical response patterns
+    3. If the message asks about something not evident in their tweets or profile:
+      - Provide a natural, generic response that aligns with their overall style
+      - Stay in character while being non-committal about specifics
+    4. Maintain appropriate and professional content
+    5. Try giving sarcastic answer or funny answer
+    6. Make your responses more engaging
+    7. Focus on being conversational rather than formal
+    8. Use a conversational tone
+    9. use special characters if you think it is appropriate
 
-Response guidelines:
-1. Keep response under 50 words
-2. Match their vocabulary, tone, and typical response patterns
-3. If the message asks about something not evident in their tweets or profile:
-   - Provide a natural, generic response that aligns with their overall style
-   - Stay in character while being non-committal about specifics
-4. Maintain appropriate and professional content
-5. Try giving sarcastic answer or funny answer
-6. Make your responses more engaging
-7. Focus on being conversational rather than formal
-8. Use a conversational tone
-9. use special characters if you think it is appropriate
-
-
-Important: Provide ONLY the response message, with very less explanations and no meta-commentary.`;
+    Important: Provide ONLY the response message, with very less explanations and no meta-commentary.`;
 
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
     const chat = model.startChat({
       generationConfig: {
-        maxOutputTokens: 100, // Short responses
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.8,
+        maxOutputTokens: 100, // represents the maximum number of tokens to generate in the response
+        temperature: 0.7, // randomness in the response
+        topK: 40, // top k sampling represents the number of top most probable tokens to consider for sampling
+        topP: 0.8, // top p sampling represents the cumulative probability of tokens to consider for sampling
       },
       safetySettings: [
         {
