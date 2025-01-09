@@ -1,3 +1,5 @@
+// This page is actully storing new user's data in db
+// It is not collecting all data and tweets of the user like grok but some data to show in previous profiles
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

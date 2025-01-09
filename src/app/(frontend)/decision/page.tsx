@@ -1,5 +1,6 @@
 "use client";
 
+// This page is just to confirm that the user data is stored in the database
 import Image from "next/image";
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";

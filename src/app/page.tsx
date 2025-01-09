@@ -28,6 +28,7 @@ export default function Home() {
       if (!querySnapshot.empty) {
         console.log("Username already exists in the database.");
       } else {
+        // Fetching new user data and storing it in the database
         const response = await axios.get(`/api/twitter?username=${username}`);
         const { username: fetchedUsername, profile_image_url, followers_count, tweet_count } = response.data;
 
